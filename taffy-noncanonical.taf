@@ -1,0 +1,48 @@
+This file has a leading comment, which makes it noncanonical.
+-- comment --
+	This file is intentionally awful to parse, and is noncanonical in several ways.
+
+	It has a leading comment, as you've already seen.
+
+	It exercises all the edge cases of detecting not-quite section headers
+	(most of which only appear when the content is not indented,
+	e.g. is already noncanonical, and downright unrecommended).
+
+	It has a lack of trailing linebreak, which is considered mildly noncanonical.
+
+	Erroring when parsing this file is also a valid option (and parsers probably should, by default).
+-- not-a-header/one/fixture --
+-
+-- not-a-header/one/length --
+	1
+-- not-a-header/two/fixture --
+--
+-- not-a-header/two/length --
+	2
+-- not-a-header/three/fixture --
+-- 
+-- not-a-header/three/length --
+	3
+-- not-a-header/four/fixture --
+--  
+-- not-a-header/four/length --
+	4
+-- not-a-header/five/fixture --
+--  -
+-- not-a-header/five/length --
+	5
+-- not-a-header/six/fixture --
+-- x -
+-- not-a-header/six/length --
+	6
+-- oneline-indented/fixture --
+	
+-- oneline-indented/length --
+	1
+-- twoline-indented/fixture --
+	
+	
+-- twoline-indented/length --
+	2
+-- trailing --
+	This content shouldn't end with a linebreak.

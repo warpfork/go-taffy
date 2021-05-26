@@ -1,12 +1,10 @@
 -- comment --
-	This is the "taffy.taffy" file -- the canonical demo taffy file itself.
+	This is the "taffy.taf" file -- the canonical demo taffy file itself.
 	This fixture file should help debug many of the details of the format itself.
 
 	Each "directory" has at least a file called "fixture" and a file called "length".
-	The "length" file will contain a base ten number (e.g. should be parseable with 'atoi') which is the length of the body of "fixture".
-
-	Be careful when editing this file.  There are some pieces of content which *intentionally* contain whitespace in positions which
-	some text editors may fight with in the name of some kind of "normalization" intention.
+	The "length" file will contain a base ten number (e.g. should be parseable with 'atoi');
+	this number should be equal to the byte count length of the body of "fixture".
 -- zerobytes/fixture --
 -- zerobytes/length --
 	0
@@ -14,10 +12,11 @@
 
 -- oneline-stripped/length --
 	1
--- oneline-indented/fixture --
-	
--- oneline-indented/length --
-	1
+-- twoline-stripped/fixture --
+
+
+-- twoline-stripped/length --
+	2
 -- basic-content/fixture --
 	Simple body.
 -- basic-content/comment --

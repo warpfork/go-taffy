@@ -1,0 +1,35 @@
+-- comment --
+	This file tests a few of the less obvious corner cases regarding taffy files.
+
+	See the "taffy.taf" file for general instructions on reading and using these test fixtures.
+
+	Be careful when editing this file.
+	There are some pieces of content which *intentionally* contain whitespace in positions which
+	some text editors may fight with in the name of some kind of "normalization" intention.
+	Taffy files normally don't need to contain these tricky sequences,
+	but sometimes users want to create interesting data (say, whitespace at ends of lines, etc),
+	and taffy doesn't want to stop users from doing as they wish and storing data as they like.
+	Therefore, the purpose of this file is to demonstrate and provide tests for those tricky sequences.
+-- single-space/fixture --
+	 
+-- single-space/length --
+	1
+-- single-tab/fixture --
+		
+-- single-tab/comment --
+	This *almost* looks like it should be in the "noncanonical" file, right?
+	Nope.  This is canonical taffy.
+	How else would you encode a single tab character, bare?
+-- single-tab/length --
+	1
+-- tab-and-break/fixture --
+		
+
+-- tab-and-break/comment --
+	This fixture is equal to "\t\n".
+	The line encoded with two tabs is an indentation tab for the format clarity, and then a content tab;
+	the line that is only a linebreak contains no indentation tab, as is canonical, because there is no content on that line.
+-- tab-and-break/length --
+	2
+-- trailing --
+	This content shouldn't end with a linebreak.  (Even though the file does end with a linebreak.)

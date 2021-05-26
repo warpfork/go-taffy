@@ -122,6 +122,16 @@ when parsing and emitting taffy documents:
   such bytes are still part of the body of the last section header,
   or, if there's absolutely no section headers in the entire file,
   such bytes would still be "leading comment" content.
+- Taffy files should have unix-style line endings (e.g., LF only).
+  Life is simply too short to argue about this anymore.
+  Section headers with CR line endings or CRLF line endings will not be recognized.
+  Body content can contain CR characters; they are not special.
+- The last linebreaks of a file are a little special.
+  We expect all files will end with a linebreak,
+  because so many text editors and tools consider this normal.
+  Accordingly, a trailing linebreak does not result in a linebreak in the last body content hunk.
+  A lack of a trailing linebreak also (of course) does not result in a linebreak in the last body content hunk.
+  Two linebreaks is required to encode a trailing linebreak in the actual body content for the last hunk in a taffy file.
 
 Taffy was inspired by [txtar](https://pkg.go.dev/golang.org/x/tools/txtar),
 and also by [wishfix](https://github.com/warpfork/go-wish/blob/master/wishfix/format.md),
