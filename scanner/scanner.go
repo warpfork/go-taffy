@@ -7,12 +7,13 @@ func NewScanner(r io.Reader) *scanner {
 }
 
 type scanner struct {
-	r     io.Reader
-	buf   []byte // buffer for content hunks.
-	buf2  []byte // buffer for potential section header.
-	one   [1]byte
-	title []byte // if non-nil, we just scanned a section body... and also detected the next section header, which must be returned next.
-	err   error  // if non-nil, we encountered an error, and should return that next.  (title takes precidence.)
+	r            io.Reader
+	buf          []byte // buffer for content hunks.
+	buf2         []byte // buffer for potential section header.
+	one          [1]byte
+	foundSection bool   // if true, we've encountered at least one section header, ever.  Used to determine if we should yield an empty content token before subsequent section headers.
+	title        []byte // if non-nil, we just scanned a section body... and also detected the next section header, which must be returned next.
+	err          error  // if non-nil, we encountered an error, and should return that next.  (title takes precidence.)
 }
 
 // Token really only comes in two kinds:
@@ -43,10 +44,20 @@ func (s *scanner) init() {
 // Scan will consume data from the reader and return the next complete token or an error.
 // Scan will never return a token and an error from the same call.
 //
+// Scan will return a content token after every section header, even if the content is empty.
+// Scan will never return two content tokens in a row, because without a section header to separate it,
+// naturally, all that data is just one piece of content and is just one token.
+//
+// The very first token returned from a scanner can be either a section header or a content token.
+// If it's a content token, this is sometimes called "leading comment" data,
+// and taffy files with a leading comment data section are considered noncanonical.
+//
 // The byte slice returned for Token.Content may be reused between subsequent calls to Scan!
 // The caller should copy the content to a new buffer before the next call to Scan if continued access to that data is needed.
 // Modifying the buffer, up until the time of the next Scan call, is acceptable, and will have no effect.
 func (s *scanner) Scan() (Token, error) {
+	s.init()
+
 	// First: return a section header token if we had detected one during the previous scan.
 	if s.title != nil {
 		title := string(s.title)
@@ -60,20 +71,27 @@ func (s *scanner) Scan() (Token, error) {
 	}
 
 	// Okay, scan away.
-	s.init()
 	s.buf = s.buf[0:0]
 line:
 	// Start of line state.
+	//  We're either on the very first line of the file;
+	//  or, we're at the start of a new line because we've just consumed a linebreak.
+	// Immediately, one fun corner case: if we have read exactly one empty line, and yet we're starting a new one already,
+	//  then count two.  Normally, the newline that ends a section header doesn't count, nor does the one that starts a section header,
+	//   but if there's no other content on that line, then it feels natural for that linebreak to mean something.
+	if len(s.buf) == 1 && s.buf[len(s.buf)-1] == '\n' {
+		s.buf = append(s.buf, '\n')
+	}
 	byt, err := s.read1()
 	if err != nil {
 		s.err = err
 		return Token{Content: s.buf}, nil
 	}
 	switch byt {
-	case '\t': // Do not keep.
+	case '\t': // Do not keep a tab if its at the start of a new line.
 		goto content
-	case '\n':
-		s.buf = append(s.buf, byt)
+	case '\n': // If we immediately get another new line... so be it.
+		s.buf = append(s.buf, '\n')
 		goto line
 	case '-': // Start recieving possible section header.
 		// Read ahead until an end-of-line, and then we'll decide.
@@ -97,28 +115,36 @@ line:
 				if end < 6 ||
 					string(s.buf2[0:3]) != "-- " ||
 					string(s.buf2[endOffset:end]) != " --" {
+					// If we didn't get a section header:
+					//  flush all the buffered content we considered into body.
 					s.buf = append(s.buf, s.buf2...)
 					s.buf = append(s.buf, '\n')
 					goto line
 				}
 				// Okay, we have a section header!
 				//  If this is the first content ever, we can return it immediately.
-				//  Otherwise, we actaully have to hang onto it for a round:
+				if !s.foundSection && len(s.buf) == 0 {
+					return Token{Title: string(s.buf2[3:endOffset])}, nil
+				}
+				s.foundSection = true
+				// If it's not the first content ever...
+				//  Actually, we have to hang onto it for a round:
 				//   first we'll have to return a token with the body for the previous section,
 				//    since detecting a section header is also the first time we know that the previous section ended.
-				if len(s.buf) == 0 {
-					return Token{Title: string(s.buf2[3:endOffset])}, nil // FIXME: this is wrong, you should still yield an empty body token or it's incredibly annoying.
-					// FIXME it's also fairly awful that if your file has a trailing linebreak, it ends up in the content.  We should... not do that, probably.
-				}
-				// One more fiddly bit.  The linebreak at the end of the previous content...
+				s.title = s.buf2[3:endOffset]
+				// Within this, there's also one more fiddly bit.  The linebreak at the end of the previous content...
 				//  doesn't actually belong to that content hunk; it belongs to the section header.
 				//  (This is important, so that it's possible to define content that doesn't have a trailing linebreak.)
 				//  We'll have to chomp off one byte before returning the content.
-				s.title = s.buf2[3:endOffset]
+				if len(s.buf) == 0 {
+					return Token{Content: s.buf}, nil
+				}
 				return Token{Content: s.buf[0 : len(s.buf)-1]}, nil
+				// FIXME it's also fairly awful that if your file has a trailing linebreak, it ends up in the content.  We should... not do that, probably.
+
 			}
 		}
-	default: // Content.
+	default: // Content.  It should've started with a tab, for clarity, but we'll be forgiving.
 		s.buf = append(s.buf, byt)
 		goto content
 	}
@@ -132,7 +158,7 @@ content:
 		}
 		switch byt {
 		case '\n':
-			s.buf = append(s.buf, byt)
+			s.buf = append(s.buf, '\n')
 			goto line
 		default:
 			s.buf = append(s.buf, byt)

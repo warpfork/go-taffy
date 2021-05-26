@@ -43,3 +43,9 @@
 	(Other formats, like txtar, upon which taffy is based, will have difficulty with this fixture.)
 -- subtle-body/length --
 	28
+-- leading-whitespace/fixture --
+		Content can start with whitespace.
+-- leading-whitespace/content --
+	Yaml heredocs fail at this.
+-- leading-whitespace/length --
+	35

@@ -44,6 +44,9 @@ func TestTaffy(t *testing.T) {
 			"subtle-body/fixture",
 			"subtle-body/comment",
 			"subtle-body/length",
+			"leading-whitespace/fixture",
+			"leading-whitespace/content",
+			"leading-whitespace/length",
 		}
 		qt.Check(t, titles, qt.DeepEquals, expectedTitles)
 		t.Run("detects-all-section-content", func(t *testing.T) {
@@ -191,6 +194,7 @@ func TestNoncanonical(t *testing.T) {
 			"not-a-header/six/fixture", "not-a-header/six/length",
 			"oneline-indented/fixture", "oneline-indented/length",
 			"twoline-indented/fixture", "twoline-indented/length",
+			"horrible-mix/fixture", "horrible-mix/comment", "horrible-mix/length",
 			"trailing",
 		}
 		qt.Check(t, titles, qt.DeepEquals, expectedTitles)

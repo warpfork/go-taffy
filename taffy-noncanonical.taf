@@ -44,5 +44,16 @@ This file has a leading comment, which makes it noncanonical.
 	
 -- twoline-indented/length --
 	2
+-- horrible-mix/fixture --
+a
+	b
+  c
+-- horrible-mix/comment --
+	The content here is "a\nb\n  c".
+	The point of this fixture is to emphasize that even if unindented content is present,
+	the parser is not required to remember your previous errors and treat later indentation differently.
+	Also, two spaces is not equal to a tab.
+-- horrible-mix/length --
+	7
 -- trailing --
 	This content shouldn't end with a linebreak.
