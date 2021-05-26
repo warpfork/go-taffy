@@ -1,0 +1,46 @@
+-- comment --
+	This is the "taffy.taffy" file -- the canonical demo taffy file itself.
+	This fixture file should help debug many of the details of the format itself.
+
+	Each "directory" has at least a file called "fixture" and a file called "length".
+	The "length" file will contain a base ten number (e.g. should be parseable with 'atoi') which is the length of the body of "fixture".
+
+	Be careful when editing this file.  There are some pieces of content which *intentionally* contain whitespace in positions which
+	some text editors may fight with in the name of some kind of "normalization" intention.
+-- zerobytes/fixture --
+-- zerobytes/length --
+	0
+-- oneline-stripped/fixture --
+
+-- oneline-stripped/length --
+	1
+-- oneline-indented/fixture --
+	
+-- oneline-indented/length --
+	1
+-- basic-content/fixture --
+	Simple body.
+-- basic-content/comment --
+	Note that this fixture *does not* contain a trailing linebreak.
+-- basic-content/length --
+	12
+-- multiline/fixture --
+	a
+
+	b
+-- multiline/comment --
+	Note that this fixture has mixed indentation.
+	It's indented, like all taffy content, so that the data is clearly separated from the control markers.
+	However, note the lack of indentation in the empty lines in the middle of the body.
+	Also note the lack of trailing linebreak.
+	Overall, the count of characters here is two alphabetic characters, and two linebreaks.
+-- multiline/length --
+	4
+-- subtle-body/fixture --
+	-- this-is-a-trap --
+	Gotcha?
+-- subtle-body/comment --
+	Indentation in taffy makes it clear that this is still body content, not a new file.
+	(Other formats, like txtar, upon which taffy is based, will have difficulty with this fixture.)
+-- subtle-body/length --
+	28
