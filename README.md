@@ -4,6 +4,9 @@ go-taffy
 `go-taffy` is a library implementing the "taffy" file format.
 
 "taffy" stands for "Test Anything Files -- For You".
+Or "Test Anything Fixture Files, Yeah".
+Whatever; it's called "taffy".
+
 It's a simple, human-editable file format which is intended to be useful for writing test fixtures,
 and for being easily parsable in any language with a minimal amount of parser code.
 
