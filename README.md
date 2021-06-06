@@ -137,7 +137,8 @@ when parsing and emitting taffy documents:
   Two linebreaks is required to encode a trailing linebreak in the actual body content for the last hunk in a taffy file.
 
 Taffy was inspired by [txtar](https://pkg.go.dev/golang.org/x/tools/txtar),
-and also by [wishfix](https://github.com/warpfork/go-wish/blob/master/wishfix/format.md),
+and also by [wishfix](https://github.com/warpfork/go-wish/blob/master/wishfix/format.md)
+([example](https://github.com/polydawn/repeatr/blob/d581713218bad916aee5b67a55e93806bb8873f2/examples/hello-cached.tcase)),
 but adds slightly more safety for user-defined-content than txtar,
 and significantly simplifies from wishfix.
 
