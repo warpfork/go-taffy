@@ -11,6 +11,23 @@ It's a simple, human-editable file format which is intended to be useful for wri
 and for being easily parsable in any language with a minimal amount of parser code.
 
 
+DEPRECATED
+----------
+
+Taffy was a decent idea, but [testmark](https://github.com/warpfork/go-testmark)
+is an even _better_ idea.
+
+Go use testmark instead!
+
+Testmark is easier to use,
+easier to embed in other beautiful documents,
+and already has more implementations in more langauges.
+Testmark learned lessons from taffy and then surpassed it.
+There is no good reason to prefer taffy over testmark.
+
+Go use testmark.
+
+
 Example taffy content
 ---------------------
 
